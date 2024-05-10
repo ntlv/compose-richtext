@@ -108,7 +108,7 @@ private fun computeRichTextString(
                 url = currentNodeType.destination,
                 contentDescription = currentNodeType.title,
                 modifier = Modifier.fillMaxWidth(),
-                contentScale = ContentScale.Inside
+                contentScale = ContentScale.FillWidth
               )
             }
           )
