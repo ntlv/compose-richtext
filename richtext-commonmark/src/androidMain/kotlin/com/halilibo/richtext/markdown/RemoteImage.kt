@@ -1,6 +1,7 @@
 package com.halilibo.richtext.markdown
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
@@ -75,6 +76,7 @@ internal actual fun RemoteImage(
 //    }
 
   val textColor = LocalRemoteImageStatusTextColor.current
+  val onLinkClick = LocalOnLinkClicked.current
   when (val state = painter.state) {
     is Empty -> BasicText(text = "Painter state \"EMPTY\", url: $url", color = { textColor })
     is Error -> BasicText(text = "Image loading of url $url failed with: ${state.result.throwable}", color = { textColor })
@@ -82,7 +84,7 @@ internal actual fun RemoteImage(
     is Success -> Image(
       painter = painter,
       contentDescription = contentDescription,
-      modifier = LocalRemoteImageModifierProvider.current,
+      modifier = LocalRemoteImageModifierProvider.current.clickable { onLinkClick(url) },
       contentScale = contentScale
     )
   }
