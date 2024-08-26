@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -21,6 +22,8 @@ import coil.size.Size
 private val DEFAULT_IMAGE_SIZE = 64.dp
 
 public val LocalRemoteImageModifierProvider: ProvidableCompositionLocal<Modifier> = compositionLocalOf { Modifier }
+public val LocalRemoteImageStatusTextColor: ProvidableCompositionLocal<Color> = compositionLocalOf { Color.White }
+
 
 /** Implementation of RemoteImage by using Coil library for Android. */
 @Composable
@@ -71,10 +74,11 @@ internal actual fun RemoteImage(
 //      }
 //    }
 
+  val textColor = LocalRemoteImageStatusTextColor.current
   when (val state = painter.state) {
-    is Empty -> BasicText(text = "Painter state \"EMPTY\", url: $url")
-    is Error -> BasicText(text = "Image loading of url $url failed with: ${state.result.throwable}")
-    is Loading -> BasicText(text = "Loading image: $url")
+    is Empty -> BasicText(text = "Painter state \"EMPTY\", url: $url", color = { textColor })
+    is Error -> BasicText(text = "Image loading of url $url failed with: ${state.result.throwable}", color = { textColor })
+    is Loading -> BasicText(text = "Loading image: $url", color = { textColor })
     is Success -> Image(
       painter = painter,
       contentDescription = contentDescription,
