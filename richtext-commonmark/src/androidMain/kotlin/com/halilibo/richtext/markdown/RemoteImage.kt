@@ -1,30 +1,25 @@
 package com.halilibo.richtext.markdown
 
-import androidx.compose.foundation.Image
+import DownloadingImageVector
+import ErrorImageVector
+import ImageImageVector
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImagePainter.State.Empty
-import coil.compose.AsyncImagePainter.State.Error
-import coil.compose.AsyncImagePainter.State.Loading
-import coil.compose.AsyncImagePainter.State.Success
-import coil.compose.rememberAsyncImagePainter
-import coil.request.ImageRequest
-import coil.size.Size
+import coil.compose.AsyncImage
 
 private val DEFAULT_IMAGE_SIZE = 64.dp
 
-public val LocalRemoteImageModifierProvider: ProvidableCompositionLocal<Modifier> = compositionLocalOf { Modifier }
-public val LocalRemoteImageStatusTextColor: ProvidableCompositionLocal<Color> = compositionLocalOf { Color.White }
-
+public val LocalRemoteImageModifierProvider: ProvidableCompositionLocal<Modifier> =
+  compositionLocalOf { Modifier }
+public val LocalRemoteImageStatusTextColor: ProvidableCompositionLocal<Color> =
+  compositionLocalOf { Color.White }
 
 /** Implementation of RemoteImage by using Coil library for Android. */
 @Composable
@@ -34,13 +29,13 @@ internal actual fun RemoteImage(
   modifier: Modifier,
   contentScale: ContentScale
 ) {
-  val painter = rememberAsyncImagePainter(
-    ImageRequest.Builder(LocalContext.current)
-      .data(data = url)
-      .size(Size.ORIGINAL)
-      .crossfade(true)
-      .build()
-  )
+//  val painter = rememberAsyncImagePainter(
+//    ImageRequest.Builder(LocalContext.current)
+//      .data(data = url)
+//      .size(Size.)
+//      .crossfade(true)
+//      .build()
+//  )
 
 //  val density = LocalDensity.current
 
@@ -77,15 +72,26 @@ internal actual fun RemoteImage(
 
   val textColor = LocalRemoteImageStatusTextColor.current
   val onLinkClick = LocalOnLinkClicked.current
-  when (val state = painter.state) {
-    is Empty -> BasicText(text = "Painter state \"EMPTY\", url: $url", color = { textColor })
-    is Error -> BasicText(text = "Image loading of url $url failed with: ${state.result.throwable}", color = { textColor })
-    is Loading -> BasicText(text = "Loading image: $url", color = { textColor })
-    is Success -> Image(
-      painter = painter,
-      contentDescription = contentDescription,
-      modifier = LocalRemoteImageModifierProvider.current.clickable { onLinkClick(url) },
-      contentScale = contentScale
-    )
-  }
+
+  AsyncImage(
+    model = url,
+    contentDescription = "an image downloaded from $url",
+    modifier = modifier.then(LocalRemoteImageModifierProvider.current.clickable { onLinkClick(url) }),
+    contentScale = ContentScale.FillWidth,
+    error = rememberVectorPainter(image = ErrorImageVector),
+    placeholder = rememberVectorPainter(DownloadingImageVector),
+    fallback = rememberVectorPainter(ImageImageVector),
+  )
+
+//  when (val state = painter.state) {
+//    is Empty -> BasicText(text = "Painter state \"EMPTY\", url: $url", color = { textColor })
+//    is Error -> BasicText(text = "Image loading of url $url failed with: ${state.result.throwable}", color = { textColor })
+//    is Loading -> BasicText(text = "Loading image: $url", color = { textColor })
+//    is Success -> Image(
+//      painter = painter,
+//      contentDescription = contentDescription,
+//      modifier = LocalRemoteImageModifierProvider.current.clickable { onLinkClick(url) },
+//      contentScale = contentScale
+//    )
+//  }
 }
